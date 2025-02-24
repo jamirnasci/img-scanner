@@ -1,0 +1,7 @@
+{
+  "name": "image-text-reader",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
