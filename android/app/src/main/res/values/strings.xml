@@ -4,4 +4,5 @@
     <string name="title_activity_main">image-text-reader</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="admob_app_id">ca-app-pub-2077187211919243~5918014428</string>
 </resources>

@@ -23,22 +23,19 @@
         <p>
           {{ textResult }}
         </p>
-        <ion-toast 
-          :is-open="isToastOpen" 
-          message="File not selected" 
-          :duration="2000"
-          @did-dismiss="handleToast"
-        />
+        <ion-toast :is-open="isToastOpen" message="File not selected" :duration="2000" @did-dismiss="handleToast" />
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
+import Banner from '@/ads/Banner';
 import TopBar from '@/components/TopBar.vue';
+import { AdMob, AdMobInitializationOptions } from '@capacitor-community/admob';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToast, IonToolbar } from '@ionic/vue';
 import Tesseract from 'tesseract.js';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const imgSrc = ref('')
@@ -50,20 +47,32 @@ const isProgressBarVisible = ref('none')
 const lang = ref('eng')
 const reader: FileReader = new FileReader();
 const file: any = ref(null)
+let banner: Banner | null = null
 
 function clearSrc() {
   imgSrc.value = ''
   file.value = null
 }
 
-function handleToast(){
+function goToResult(text: string) {
+  if(banner){
+    banner.hideBanner()
+  }
+  router.push({
+    name: 'result', params: {
+      text: text
+    }
+  })
+}
+
+function handleToast() {
   isToastOpen.value = isToastOpen.value ? false : true
 }
 
 function extract() {
-  if(!file.value){
+  if (!file.value) {
     handleToast()
-    return ;
+    return;
   }
   isProgressBarVisible.value = 'block'
   Tesseract.recognize(
@@ -73,15 +82,10 @@ function extract() {
       logger: (m) => progress.value = `${m.progress * 100}%`, // Para mostrar o progresso
     }
   ).then(({ data: { text } }) => {
-    // textResult.value = text
     isProgressBarVisible.value = 'none'
-    router.push({
-      name: 'result', params: {
-        text: text
-      }
-    })
+    goToResult(text)
   });
-  
+
 }
 
 function setPath(event: any) {
@@ -93,6 +97,16 @@ function setPath(event: any) {
     reader.readAsDataURL(file.value);
   }
 }
+
+onMounted(async () => {
+  const { status } = await AdMob.trackingAuthorizationStatus()
+  const options: AdMobInitializationOptions = {
+
+  }
+  await AdMob.initialize(options)
+  banner = new Banner()
+  await banner.showBanner()
+})
 
 </script>
 

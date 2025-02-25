@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { Interstitial } from '@/ads/Interstitial';
 import TopBar from '@/components/TopBar.vue';
 import { IonContent, IonPage, IonToast } from '@ionic/vue';
 import { onMounted, ref } from 'vue';
@@ -28,8 +29,11 @@ const textResult = ref('')
 const isToastOpen = ref(false)
 const route = useRoute()
 const router = useRouter()
+let interstitialAd: Interstitial | null = null
 
-onMounted(()=>{
+onMounted(async ()=>{
+  interstitialAd = new Interstitial()
+  await interstitialAd.showInterstitial()
   textResult.value = route.params.text as string
 })
 
@@ -51,6 +55,7 @@ textarea{
   outline: none;
   color: black;
   border-radius: 20px;
+  background-color: whitesmoke;
 }
 button{
   margin: 5px;
